@@ -1,0 +1,154 @@
+<!DOCTYPE HTML>
+<!--
+	Paradigm Shift by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+
+<head>
+	<title>Git</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+		integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
+		crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-simplyscroll/2.1.1/jquery.simplyscroll.min.js"
+		integrity="sha512-i8BU+cmsrlyKOPFSCdO4x4wHXvjg6YIXy6K/PsPL0/3F89ccSgk06wDBP5FTyiGDzVNADQhal1dA1DHH2JB0Rw=="
+		crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-browser/0.1.0/jquery.browser.min.js"
+		integrity="sha512-7IUk8ZcM82NUtcQv8gBFQTbz0Z+yXiGQyOj+YvSOTv3ZQbxEBYrs4zmY4rrm4/opSN1Xv/oGONv5uCSqiYZy4g=="
+		crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/javascript.util/0.12.12/javascript.util.min.js"
+		integrity="sha512-oHBLR38hkpOtf4dW75gdfO7VhEKg2fsitvHZYHZjObc4BPKou2PGenyxA5ZJ8CCqWytBx5wpiSqwVEBy84b7tw=="
+		crossorigin="anonymous"></script>
+
+	<script type="text/javascript">
+
+		var ws;
+
+		function init() { }
+
+		function onSubmit() {
+			var input = document.getElementById("input");//obtenemos el nombre ingresado
+			var datos
+			$.ajax({
+				url: 'https://api.github.com/users/' + input.value,
+				success: function (respuesta) {
+					//console.log(respuesta);
+					datos = respuesta
+					output(datos)
+				},
+				error: function () {
+					//console.log("No se ha podido obtener la información");
+					datos = null
+					output(datos)
+				}
+			});
+
+			input.value = "";
+			input.focus();
+		}
+
+		function onCloseClick() {
+		}
+
+		function output(str) {
+			console.log(str)
+			var log = document.getElementById("log");
+			var escaped
+			if (str) {
+				escaped = "<div>" +
+					"<h5>Name: " + str.name + "</h5>" +
+					"<h5>Public Repos: " + str.public_repos + "</h5>" +
+					"<h5>Followers: <a onclick=\"printtable('"+ str.followers_url +"')\">" + str.followers + "</a> </h5>" +
+					"<h5>Following: <a onclick=\"printtable('"+ str.following_url+"')\">" + str.following + "</a></h5>" +
+					"<h5>Created At: " + str.created_at + "</h5>" +
+					"<img src=\"" + str.avatar_url + "\">"
+				"</div>"
+			}else{
+				escaped = "No se ha podido obtener la información"
+			}
+			
+			//var escaped = str.replace(/&/, "&amp;").replace(/</, "&lt;").
+			//replace(/>/, "&gt;").replace(/"/, "&quot;"); // "
+			log.innerHTML = escaped;
+		}
+
+		function outputtable(datos) {
+			console.log(datos)
+			var log = document.getElementById("follow");
+			var tabledata
+
+			for (i = 0; i < datos.length; i++) {
+				tabledata = "<tr>"+"<td>"+datos[i].login+"</td>"+"<td>"+datos[i].id+"</td>"+"<td><img width=\"25\" height=\"25\" src=\""+datos[i].avatar_url+"\"></td>"+"</tr>" + tabledata
+			}
+
+			var escaped = "<h2>Table</h2>"+
+			"<table>"+tabledata+"</table>"
+
+
+			log.innerHTML = escaped;
+		}
+
+		function printtable(str) {
+			var datos
+			$.ajax({
+				url: str,
+				success: function (respuesta) {
+					//console.log(respuesta);
+					datos = respuesta
+					outputtable(datos)
+				},
+				error: function () {
+					//console.log("No se ha podido obtener la información");
+					datos = null
+					outputtable(datos)
+				}
+			});
+		}
+
+	</script>
+	<style>
+		table, tr, td {
+			border: 1px solid black;
+			border-collapse: collapse;
+		}
+	</style>
+</head>
+
+<body onload="init();">
+
+	<div id="container">
+		<div class="row">
+			<div class="col-sm-12">
+				
+
+				<h2 align="center">Consultor de Usuarios Github</h2>
+			</div>
+			<div class="col-sm-6">
+				<h2>Ingrese el usuario en minuscula</h2>
+				<form onsubmit="onSubmit(); return false;">
+					<input type="text" id="input" required>
+					<input type="submit" value="Send">
+					<button onclick="onCloseClick(); return false;">close</button>
+				</form>
+				<div id="log"></div>
+				
+			</div>
+			<div class="col-sm-6" id="follow"></div>
+
+		</div>
+
+	</div>
+
+	<!-- Scripts -->
+	
+
+</body>
+
+</html>
